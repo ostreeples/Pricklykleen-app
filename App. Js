@@ -1,0 +1,42 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking, StyleSheet, Alert, ActivityIndicator, Switch, Modal, Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+const LOGO = { uri: 'https://pricklykleen.netlify.app/logo.png' };
+export default function App(){
+const [loading,setLoading]=useState(true);
+const [user,setUser]=useState(null);
+const [authMode,setAuthMode]=useState('Sign In');
+const [authName,setAuthName]=useState('');
+const [authPhone,setAuthPhone]=useState('');
+const [authPass,setAuthPass]=useState('');
+const [menuOpen,setMenuOpen]=useState(false);
+const [dark,setDark]=useState(false);
+const [page,setPage]=useState('Home');
+const [name,setName]=useState('');
+const [phone,setPhone]=useState('');
+const [address,setAddress]=useState('');
+const [service,setService]=useState('General Cleaning');
+const [size,setSize]=useState('2-Bed');
+const [pin,setPin]=useState('');
+const [isAdmin,setIsAdmin]=useState(false);
+const [bookings,setBookings]=useState([{id:'PK-1024',service:'Deep Cleaning',size:'3-Bed',total:65000,status:'Active'}]);
+useEffect(()=>{const t=setTimeout(()=>setLoading(false),2000);return()=>clearTimeout(t)},[]);
+const prices={'1-Bed':25000,'2-Bed':35000,'3-Bed':50000,'4-Bed':65000,'Office':80000};
+let total=prices[size];
+if(service==='Deep Cleaning') total+=15000;
+const bg=dark?'#111827':'#FFF0F7';
+const cardBg=dark?'#1F2937':'#FFFFFF';
+const txt=dark?'#FFFFFF':'#0B192C';
+const subTxt=dark?'#D1D5DB':'#4B5563';
+const go=(p)=>{setPage(p);setMenuOpen(false)};
+const book=(s)=>{setService(s);setPage('Book');setMenuOpen(false)};
+const wa=()=>Linking.openURL('https://wa.me/2347072614546?text=Hi PricklyKleen, I want to book cleaning');
+const pay=()=>Linking.openURL('https://paystack.shop/pay/sojfln-o-j');
+const doAuth=()=>{if(!authPhone||!authPass){Alert.alert('Fill phone and password');return}let n=authName||'Prickly Customer';setUser({name:n,phone:authPhone});setName(n);setPhone(authPhone);Alert.alert(authMode+' Success','Welcome '+n)};
+const bookNow=()=>{if(!user){Alert.alert('Sign In First');setPage('Account');return}const id='PK-'+Math.floor(1000+Math.random()*9000);setBookings([{id,service,size,total,status:'Upcoming'}].concat(bookings));setPage('My Bookings');Alert.alert('Booked','ID: '+id)};
+if(loading){return(<LinearGradient colors={['#FF2E88','#A100F2','#5B00B8']} style={s.splash}><Image source={LOGO} style={s.logoBig}/><Text style={s.splashLogo}>PRICKLYKLEEN</Text><Text style={s.splashTag}>Swift and quality Cleaning at its peak</Text><ActivityIndicator size="large" color="#fff" style={{marginTop:30}}/></LinearGradient>)}
+let content=null;
+if(page==='Home'){content=(<View><Text style={[s.section,{color:txt}]}>Featured Projects</Text><ScrollView horizontal showsHorizontalScrollIndicator={false}><TouchableOpacity onPress={()=>book('Deep Cleaning')} style={[s.slide,{backgroundColor:'#FF2E88'}]}><Text style={{fontSize:44}}>🏡</Text><Text style={s.slideTitle}>Lekki 4-Bed Deep Clean</Text></TouchableOpacity><TouchableOpacity onPress={()=>book('General Cleaning')} style={[s.slide,{backgroundColor:'#1E9BF0'}]}><Text style={{fontSize:44}}>🏢</Text><Text style={s.slideTitle}>VI Office Weekly Clean</Text></TouchableOpacity></ScrollView><Text style={[s.section,{color:txt}]}>Our Services - Tap to Book</Text><TouchableOpacity onPress={()=>book('General Cleaning')} style={[s.card,{backgroundColor:cardBg}]}><Text style={s.cardT}>🏠 General Cleaning</Text><Text style={{color:subTxt}}>From N25,000 - Book</Text></TouchableOpacity><TouchableOpacity onPress={()=>book('Deep Cleaning')} style={[s.card,{backgroundColor:cardBg}]}><Text style={s.cardT}>✨ Deep Cleaning</Text><Text style={{color:subTxt}}>From N60,000 - Book</Text></TouchableOpacity><TouchableOpacity onPress={()=>book('Move-in / Move-out')} style={[s.card,{backgroundColor:cardBg}]}><Text style={s.cardT}>📦 Move-in / Move-out</Text><Text style={{color:subTxt}}>From N55,000 - Book</Text></TouchableOpacity><TouchableOpacity onPress={()=>book('Express Wash & Fold')} style={[s.card,{backgroundColor:cardBg}]}><Text style={s.cardT}>👕 Express Wash and Fold</Text><Text style={{color:subTxt}}>Same-day laundry</Text></TouchableOpacity><Text style={[s.section,{color:txt}]}>Our Uniform</Text><View style={[s.card,{backgroundColor:cardBg}]}><Text style={{fontSize:40}}>👷‍♀️🧹👷‍♂️</Text><Text style={{color:subTxt}}>Pink and Purple Polo - Black Trouser - Gloves - ID Card. No uniform - No entry.</Text></View><Text style={[s.section,{color:txt}]}>Reviews</Text><View style={[s.card,{backgroundColor:cardBg}]}><Text style={{fontWeight:'bold',color:txt}}>Amara - Lekki - 5 stars</Text><Text style={{color:subTxt}}>They came on time, house sparkling.</Text></View></View>)}
+if(page==='Pricing'){content=(<View><Text style={[s.h1,{color:txt}]}>Instant Quote</Text><TouchableOpacity onPress={()=>setService('General Cleaning')} style={[s.opt,{backgroundColor:cardBg}]}><Text style={{color:txt}}>General Cleaning</Text></TouchableOpacity><TouchableOpacity onPress={()=>setService('Deep Cleaning')} style={[s.opt,{backgroundColor:cardBg}]}><Text style={{color:txt}}>Deep Cleaning</Text></TouchableOpacity><TouchableOpacity onPress={()=>setSize('1-Bed')} style={[s.opt,{backgroundColor:cardBg}]}><Text style={{color:txt}}>1-Bed - N25,000</Text></TouchableOpacity><TouchableOpacity onPress={()=>setSize('2-Bed')} style={[s.opt,{backgroundColor:cardBg}]}><Text style={{color:txt}}>2-Bed - N35,000</Text></TouchableOpacity><TouchableOpacity onPress={()=>setSize('3-Bed')} style={[s.opt,{backgroundColor:cardBg}]}><Text style={{color:txt}}>3-Bed - N50,000</Text></TouchableOpacity><TouchableOpacity onPress={()=>setSize('4-Bed')} style={[s.opt,{backgroundColor:cardBg}]}><Text style={{color:txt}}>4-Bed - N65,000</Text></TouchableOpacity><Text style={[s.total,{color:txt}]}>Total: N{total.toLocaleString()}</Text><TouchableOpacity onPress={pay} style={s.pay}><Text style={s.btnT}>Pay Now</Text></TouchableOpacity></View>)}
+if(page==='Book'){content=(<View><Text style={[s.h1,{color:txt}]}>Book Cleaning</Text><Text style={s.selected}>You selected: {service} - {size}</Text><TextInput style={[s.input,{backgroundColor:cardBg,color:txt}]} placeholder="Your Name" placeholderTextColor="#999" value={name} onChangeText={setName}/><TextInput style={[s.input,{backgroundColor:cardBg,color:txt}]} placeholder="Phone" placeholderTextColor="#999" value={phone} onChangeText={setPhone} keyboardType="phone-pad"/><TextInput style={[s.input,{backgroundColor:cardBg,color:txt}]} placeholder="Address / Area" placeholderTextColor="#999" value={address} onChangeText={setAddress}/><Text style={{color:txt,fontWeight:'bold'}}>Total: N{total.toLocaleString()}</Text><TouchableOpacity onPress={bookNow} style={s.pay}><Text style={s.btnT}>Confirm Booking</Text></TouchableOpacity><TouchableOpacity onPress={wa} style={s.wa}><Text style={s.btnT}>Confirm on WhatsApp</Text></TouchableOpacity></View>)}
+// PART 2 CONTINUES HERE
